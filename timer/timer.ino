@@ -15,7 +15,10 @@ const int mt = 7;
 
 unsigned long time1;
 
+// nombre de tours 
 volatile long cpt = 0;
+//vitesse
+volatile int y = 0;
 
 
 void setup() {
@@ -29,7 +32,7 @@ void setup() {
 
   attachInterrupt (ifred, compte, FALLING);
   
-  start_timer_TC1 (ONESEC);
+  start_timer_TC1 (ONESEC/2);
 }
 
 
@@ -40,19 +43,22 @@ void loop() {
 
 void TC3_Handler() {
 
+  TC_GetStatus (TC1,0);
+
   cpt = 0;
   
   if (x ==0) {
     SENDLEDHIGH;
-    analogWrite (mt,200);
+    analogWrite (mt,y);
     x = 1;
   }
   else {
     SENDLEDLOW;
     analogWrite (mt,0);
     x = 0;
+    y = (y + 10) % 256;
   }
-  TC_GetStatus (TC1,0);
+
 
 }
   
