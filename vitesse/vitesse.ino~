@@ -1,0 +1,7 @@
+ if ((millis() - time1) > 500) {
+    time1 = millis();
+    Serial.println(cpt*2);
+    cpt = 0;
+  }
+
+

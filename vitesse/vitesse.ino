@@ -1,3 +1,5 @@
+
+
 #include "timer1.h"
 
 // registre pour mettre HIGH sur une broche
@@ -12,6 +14,7 @@ int x = 0;
 const int led = 5;
 const int ifred = 6;
 const int mt = 7;
+int sens = 0;
 
 unsigned long time1;
 
@@ -32,7 +35,7 @@ void setup() {
 
   attachInterrupt (ifred, compte, FALLING);
   
-  start_timer_TC1 (ONESEC/2);
+  start_timer_TC1 (ONESEC);
 
   analogWrite (mt,0);
 }
@@ -40,12 +43,20 @@ void setup() {
 
 void loop() {
 
-  if ((millis() - time1) > 500) {
+ if ((millis() - time1) > 500) {
     time1 = millis();
-    Serial.println(cpt*2);
+    Serial.println(cpt);
     cpt = 0;
   }
 
+ if (y >249) {
+   Serial.println("max");
+   sens = 1;
+ }
+ if (y < 11) {
+   Serial.println("min");
+   sens = 0;
+ }
 
 }
 
@@ -54,7 +65,7 @@ void TC3_Handler() {
 
   TC_GetStatus (TC1,0);
 
-  
+
   if (x ==0) {
     SENDLEDHIGH;
     analogWrite (mt,y);
@@ -62,11 +73,17 @@ void TC3_Handler() {
   }
   else {
     SENDLEDLOW;
-    analogWrite (mt,0);
     x = 0;
-    y = (y + 10) % 256;
   }
 
+  if (sens == 0) {
+    y = (y + 10);
+  }
+  else {
+    y = (y - 10);
+  }
+  
+  
 
 }
   
