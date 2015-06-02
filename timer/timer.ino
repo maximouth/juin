@@ -1,5 +1,11 @@
+#include "timer1.h"
+
+// registre pour mettre HIGH sur une broche
 #define SENDLEDHIGH (*(( int32_t*)  0x400E1230) =  0x1<<25)
+// registre pour mettre LOW sur une broche
 #define SENDLEDLOW  (*(( int32_t*)  0x400E1234) =  0x1<<25)
+
+#define ONESEC 84000000/128
 
 
 int x = 0;
@@ -22,15 +28,18 @@ void setup() {
   time1 = millis();
 
   attachInterrupt (ifred, compte, FALLING);
-
+  
+  start_timer_TC1 (ONESEC);
 }
 
 
 void loop() {
 
-  if ((millis() - time1) > 1000) {
+}
 
-  Serial.println (cpt);
+
+void TC3_Handler() {
+
   cpt = 0;
   
   if (x ==0) {
@@ -43,12 +52,11 @@ void loop() {
     analogWrite (mt,0);
     x = 0;
   }
-  
-  time1 = millis();
-  }
-   
-}
+  TC_GetStatus (TC1,0);
 
+}
+  
+   
 void compte() {
   cpt ++;
 }
