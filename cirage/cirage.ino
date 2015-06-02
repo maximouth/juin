@@ -5,9 +5,9 @@
 // registre pour mettre LOW sur une broche
 #define SENDLEDLOW  (*(( int32_t*)  0x400E1234) =  0x1<<25)
 
-#define ONESEC128 84000000/128
+#define ONESEC128 (84000000/128)
 
-#define DELTA 11
+#define DELTA (11)
 
 int x = 0;
 const int led = 5;
@@ -44,11 +44,6 @@ void setup() {
 void loop() {
 
 
-  if(((millis() - time2) > DELTA) && (bruit == 1)) {
-    bruit = 0;
-  }
-
-
   if ((millis() - time1) > 500) {
     time1 = millis();
     Serial.println(cpt);
@@ -59,7 +54,7 @@ void loop() {
       analogWrite (mt,60);
       flag = 1;
     }
-    else if ((cpt < 12) && (flag == 0)) {
+    else if ((cpt < 13) && (flag == 0)) {
       Serial.println("fort");
       start_timer_TC1 (ONESEC128*4, 0);
       analogWrite (mt,250);
@@ -84,6 +79,12 @@ void TC3_Handler() {
 
    
 void compte() {
+
+
+  if(((millis() - time2) > DELTA) && (bruit == 1)) {
+    bruit = 0;
+  }
+
 
   if (bruit == 0) {
     //Serial.println("compte");
