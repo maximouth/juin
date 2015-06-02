@@ -7,7 +7,7 @@
 
 #define ONESEC128 84000000/128
 
-
+#define DELTA 11
 
 int x = 0;
 const int led = 5;
@@ -17,6 +17,8 @@ int sens = 0;
 volatile int flag = 0;
 
 unsigned long time1;
+unsigned long time2;
+volatile int bruit = 0;
 
 // nombre de tours 
 volatile long cpt = 0;
@@ -41,20 +43,25 @@ void setup() {
 
 void loop() {
 
+
+  if(((millis() - time2) > DELTA) && (bruit == 1)) {
+    bruit = 0;
+  }
+
+
   if ((millis() - time1) > 500) {
     time1 = millis();
     Serial.println(cpt);
- 
 
-    if ((cpt < 23) && (flag == 0)) {
+    if ((cpt < 5) && (flag == 0)) {
       Serial.println("arret");
       start_timer_TC1 (ONESEC128*2, 0);
       analogWrite (mt,60);
       flag = 1;
     }
-    else if ((cpt < 50) && (flag == 0)) {
+    else if ((cpt < 12) && (flag == 0)) {
       Serial.println("fort");
-      start_timer_TC1 (ONESEC128*3, 0);
+      start_timer_TC1 (ONESEC128*4, 0);
       analogWrite (mt,250);
       SENDLEDHIGH;
       flag = 1;
@@ -77,5 +84,12 @@ void TC3_Handler() {
 
    
 void compte() {
-  cpt ++;
+
+  if (bruit == 0) {
+    //Serial.println("compte");
+    time2 = millis();
+    cpt ++;
+    bruit = 1;
+  }
+
 }
