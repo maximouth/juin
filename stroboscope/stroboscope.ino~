@@ -1,5 +1,5 @@
 #include "timers.h"
-
+#include "strobos.h"
 
 // registre pour mettre HIGH sur une broche
 #define SENDLEDHIGH (*(( int32_t*)  0x400E1230) =  0x1<<25)
