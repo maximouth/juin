@@ -16,7 +16,9 @@ int bruit = 0;
 unsigned long time1;
 unsigned long time2;
 
-int v =100;
+int tour = 34;
+
+int v =250;
 
 void setup() {
 
@@ -30,7 +32,7 @@ void setup() {
 
   analogWrite (mt,v);
 
-  start_timer_TC1 (ONESEC128/240,0);
+  start_timer_TC1 (ONESEC128/544,0);
 
   attachInterrupt (ifred, compte, FALLING);
 }
@@ -83,15 +85,15 @@ void compte() {
   }
 }
 
-float KE = 1/15;
-float KD = 0.2;
+float KE = 1/tour;
+float KD = 0.05;
 float KI = -0.7;
 int prevErr = 0;
 int somme = 0;
 
 float PID(int cpt) {
 
-  int err = (cpt-15);
+  int err = (cpt-tour);
   somme += err;
 
   float pid = ( (err*KE) + ((KD/0.5)*(err-prevErr)) + (KI*0.5*(somme))); 

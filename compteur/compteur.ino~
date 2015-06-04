@@ -1,0 +1,167 @@
+#include "timers.h"
+
+#define LED1 (53)
+#define LED2 (49)
+#define LED3 (45)
+
+#define BT1 (30)
+#define BT2 (26)
+
+#define DELTA (150)
+
+#define ONESEC128 (84000000/128)
+
+volatile int cpt = 0;
+
+unsigned long time1;
+unsigned long time2;
+unsigned long time3;
+int bruit = 0;
+int bruit2 = 0;
+
+void setup() {
+
+  pinMode(LED1, OUTPUT);
+  pinMode(LED2, OUTPUT);
+  pinMode(LED3, OUTPUT);
+ 
+  pinMode(BT1, INPUT);
+  pinMode(BT2, INPUT);
+
+  attachInterrupt(BT1, lancement, CHANGE);
+  attachInterrupt(BT2, compte, CHANGE);
+
+
+  Serial.begin(9600);
+
+
+  digitalWrite(LED1,LOW); 
+  digitalWrite(LED2,LOW); 
+  digitalWrite(LED3,LOW); 
+
+
+}
+
+
+void loop() {
+
+
+}
+
+
+void compte() {
+
+
+  if(((millis() - time2) > DELTA) && (bruit == 1)) {
+    bruit = 0;
+  }
+  if (bruit == 0) {
+    //Serial.println("compte");
+    time2 = millis();
+    cpt ++;
+    bruit = 1;
+    Serial.println("compte");
+  }
+}
+
+ void lancement() {
+
+
+  if(((millis() - time1) > DELTA) && (bruit2 == 1)) {
+    bruit2 = 0;
+  }
+  if (bruit2 == 0) {
+    //Serial.println("compte");
+    time1 = millis();
+    cpt = 0;
+    start_timer_TC1 (ONESEC128*5,0); 
+    TC_GetStatus (TC1,0);
+    Serial.println("lance");
+    bruit2 = 1;
+  }
+
+ }
+ 
+
+
+void TC3_Handler() {
+  stop_timer_TC1(0);
+  time3 = millis();
+  decompte(cpt%8);
+  cpt =0;
+
+}
+
+void decompte(int cpt) {
+  Serial.println(cpt);
+
+  if ((millis() - time3) > 500) {
+
+
+    if (cpt < 1) {
+      digitalWrite(LED1,LOW);
+      digitalWrite(LED2,LOW);
+      digitalWrite(LED3,LOW);
+      return;
+    }
+    else {
+      switch (cpt) {
+      case 1 :
+	digitalWrite(LED1,HIGH);
+	digitalWrite(LED2,LOW);
+	digitalWrite(LED3,LOW);
+	time3 = millis();
+	decompte(0);
+	break;
+      case 2 :
+	digitalWrite(LED1,LOW);
+	digitalWrite(LED2,HIGH);
+	digitalWrite(LED3,LOW);
+	time3 = millis();
+	decompte(1);
+	break;
+      case 3 :
+	digitalWrite(LED1,HIGH);
+	digitalWrite(LED2,HIGH);
+	digitalWrite(LED3,LOW);
+	time3 = millis();
+	decompte(2);
+	break;
+      case 4 :
+	digitalWrite(LED1,LOW);
+	digitalWrite(LED2,LOW);
+	digitalWrite(LED3,HIGH);
+	time3 = millis();
+	decompte(3);
+	break;
+      case 5 :
+	digitalWrite(LED1,HIGH);
+	digitalWrite(LED2,LOW);
+	digitalWrite(LED3,HIGH);
+	time3 = millis();
+	decompte(4);
+	break;
+      case 6 :
+	digitalWrite(LED1,LOW);
+	digitalWrite(LED2,HIGH);
+	digitalWrite(LED3,HIGH);
+	time3 = millis();
+	decompte(5);
+	break;
+      case 7 :
+	digitalWrite(LED1,HIGH);
+	digitalWrite(LED2,HIGH);
+	digitalWrite(LED3,HIGH);
+	time3 = millis();
+	decompte(6);
+	break;
+      default :
+	decompte(7);
+	break;
+      
+      }
+
+    }
+  }
+  decompte(cpt);
+}
